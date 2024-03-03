@@ -34,13 +34,33 @@ public static class ArraysTester {
     /// <returns>array of doubles that are the multiples of the supplied number</returns>
     private static double[] MultiplesOf(double number, int length)
     {
-        // TODO Problem 1 Start
-        // Remember: Using comments in your program, write down your process for solving this problem
-        // step by step before you write the code. The plan should be clear enough that it could
-        // be implemented by another person.
+        // Plan:
+        // 1. Check if the given length is greater than 0. If not, return an empty array.
+        // 2. Create a new array of doubles with the specified length.
+        // 3. Use a loop to populate the array with multiples of the given number.
+        // 4. Return the array.
 
-        return new double[0]; // replace this return statement with your own
+        // Check if the given length is greater than 0
+        if (length <= 0)
+        {
+            // If not, return an empty array
+            return new double[0];
+        }
+
+        // Create a new array of doubles with the specified length
+        double[] result = new double[length];
+
+        // Use a loop to populate the array with multiples of the given number
+        for (int i = 0; i < length; i++)
+        {
+            result[i] = number * (i + 1); // Start with 'number' and multiply by the position in the sequence
+        }
+
+        // Return the array
+        return result;
     }
+
+    
     
     /// <summary>
     /// Rotate the 'data' to the right by the 'amount'.  For example, if the data is 
@@ -52,10 +72,29 @@ public static class ArraysTester {
     /// </summary>
     private static void RotateListRight(List<int> data, int amount)
     {
-        // TODO Problem 2 Start
-        // Remember: Using comments in your program, write down your process for solving this problem
-        // step by step before you write the code. The plan should be clear enough that it could
-        // be implemented by another person.
+        // Plan:
+        // 1. Check if the 'amount' is within the valid range (1 and data.Count).
+        // 2. Use the GetRange method to extract the portion of the list that needs to be rotated.
+        // 3. Remove the extracted portion from the original list.
+        // 4. Insert the extracted portion at the beginning of the original list.
+        // 5. Ensure that the amount is adjusted to fit within the valid range.
+        // Note: No need to return a new list as the function modifies the existing 'data' list.
+
+        // Check if the 'amount' is within the valid range
+        if (amount >= 1 && amount <= data.Count)
+        {
+            // Use GetRange to extract the portion of the list that needs to be rotated
+            List<int> rotatedPart = data.GetRange(data.Count - amount, amount);
+
+            // Remove the extracted portion from the original list
+            data.RemoveRange(data.Count - amount, amount);
+
+            // Insert the extracted portion at the beginning of the original list
+            data.InsertRange(0, rotatedPart);
+
+            // Ensure that the amount is adjusted to fit within the valid range
+            amount %= data.Count;
+        }
 
     }
 }
