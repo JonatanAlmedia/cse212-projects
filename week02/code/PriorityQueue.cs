@@ -13,6 +13,11 @@
         _queue.Add(newNode);
     }
 
+    /// <summary>
+    /// Remove and return the element with the highest priority.
+    /// If multiple elements have the same highest priority, the one closest to the front is removed first.
+    /// </summary>
+    /// <returns>The value of the removed element</returns>
     public String Dequeue() {
         if (_queue.Count == 0) // Verify the queue is not empty
         {
@@ -23,12 +28,15 @@
         // Find the index of the item with the highest priority to remove
         var highPriorityIndex = 0;
         for (int index = 1; index < _queue.Count - 1; index++) {
-            if (_queue[index].Priority >= _queue[highPriorityIndex].Priority)
+            if (_queue[index].Priority > _queue[highPriorityIndex].Priority ||
+                (_queue[index].Priority == _queue[highPriorityIndex].Priority && index < highPriorityIndex)) {
                 highPriorityIndex = index;
+                }
         }
 
         // Remove and return the item with the highest priority
         var value = _queue[highPriorityIndex].Value;
+        _queue.RemoveAt(highPriorityIndex);
         return value;
     }
 
@@ -38,8 +46,8 @@
 }
 
 internal class PriorityItem {
-    internal string Value { get; set; }
-    internal int Priority { get; set; }
+    internal string Value { get; }
+    internal int Priority { get; }
 
     internal PriorityItem(string value, int priority) {
         Value = value;
