@@ -1,4 +1,7 @@
+using System.Runtime.InteropServices.Marshalling;
 using System.Text.Json;
+using System;
+using System.IO;
 
 public static class SetsAndMapsTester {
     public static void Run() {
@@ -29,7 +32,9 @@ public static class SetsAndMapsTester {
         // Problem 2: Degree Summary
         // Sample Test Cases (may not be comprehensive) 
         Console.WriteLine("\n=========== Census TESTS ===========");
-        Console.WriteLine(string.Join(", ", SummarizeDegrees("census.txt")));
+        var summary = SummarizeDegrees("census.txt");
+        PrintSummary(summary);
+        //Console.WriteLine(string.Join(", ", SummarizeDegrees("census.txt")));
         // Results may be in a different order:
         // <Dictionary>{[Bachelors, 5355], [HS-grad, 10501], [11th, 1175],
         // [Masters, 1723], [9th, 514], [Some-college, 7291], [Assoc-acdm, 1067],
@@ -108,9 +113,22 @@ public static class SetsAndMapsTester {
     /// </summary>
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     private static void DisplayPairs(string[] words) {
-        // To display the pair correctly use something like:
-        // Console.WriteLine($"{word} & {pair}");
-        // Each pair of words should displayed on its own line.
+        HashSet<string> seen = new HashSet<string>();
+
+        foreach (string word in words) {
+            string reverse = ReverseString(word);
+
+            if (!seen.Contains(reverse) && word != reverse && word[0] != word[1]) {
+                seen.Add(word);
+            } else if (word[0] != word[1]) {
+                Console.WriteLine($"{reverse} & {word}");
+            }
+        }
+    }
+    public static string ReverseString(string str) {
+        char[] charArray =str.ToCharArray();
+        Array.Reverse(charArray);
+        return new string(charArray);
     }
 
     /// <summary>
@@ -129,12 +147,27 @@ public static class SetsAndMapsTester {
     /// #############
     private static Dictionary<string, int> SummarizeDegrees(string filename) {
         var degrees = new Dictionary<string, int>();
+
         foreach (var line in File.ReadLines(filename)) {
             var fields = line.Split(",");
-            // Todo Problem 2 - ADD YOUR CODE HERE
+            var degree = fields[3].Trim();
+
+            if (degrees.ContainsKey(degree)) {
+                degrees[degree]++;
+            } else {
+                degrees[degree] = 1;
+            }
         }
 
         return degrees;
+    }
+    private static void PrintSummary(Dictionary<string, int> summary) {
+        Console.WriteLine("<Dictionary>{");
+        foreach (var pair in summary) {
+            Console.WriteLine($"[{pair.Key}, {pair.Value}]");
+        }
+        Console.WriteLine("}");
+        
     }
 
     /// <summary>
@@ -156,9 +189,45 @@ public static class SetsAndMapsTester {
     /// #############
     /// # Problem 3 #
     /// #############
+    
+    private static void PrintAnagramResult(string word1, string word2) {
+        bool isAnagram = IsAnagram(word1, word2);
+        Console.WriteLine($"{word1} and {word2}: {isAnagram}");
+    }
     private static bool IsAnagram(string word1, string word2) {
-        // Todo Problem 3 - ADD YOUR CODE HERE
-        return false;
+        word1 = word1.ToLower().Replace(" ", "");
+        word2 = word2.ToLower().Replace(" ", "");
+
+        if (word1.Length != word2.Length)
+            return false;
+
+        Dictionary<char, int> charCount1 = new Dictionary<char, int>();
+        Dictionary<char, int> charCount2 = new Dictionary<char, int>();
+
+        foreach (char c in word1) {
+            if (charCount1.ContainsKey(c))
+                charCount1[c]++;
+            else
+                charCount1[c] = 1;
+        }
+
+        foreach (char c in word2) {
+            if (charCount2.ContainsKey(c))
+                charCount2[c]++;
+            else
+                charCount2[c] = 1;
+        }
+
+        foreach (var pair in charCount1) {
+            char c = pair.Key;
+            int count1 = pair.Value;
+            int count2 = 0;
+
+            if (!charCount2.TryGetValue(c, out count2) || count1 != count2)
+                return false;
+        }
+
+        return true;
     }
 
     /// <summary>
@@ -204,6 +273,69 @@ public static class SetsAndMapsTester {
             { (6, 6), new[] { true, false, false, false } }
         };
         return map;
+    }
+
+    public class Maze {
+        private Dictionary<(int, int), bool[]> map;
+        private (int, int) currentPosition;
+
+        public Maze(Dictionary<(int, int), bool[]> mazeMap) {
+            map = mazeMap;
+            currentPosition = (1, 1); // Start position
+        }
+
+        public void ShowStatus() {
+            Console.WriteLine($"Current Position: {currentPosition}");
+        }
+
+        public void MoveLeft() {
+            int newX = currentPosition.Item1;
+            int newY = currentPosition.Item2 - 1;
+            if (IsValidMove(newX, newY, 0)) {
+                currentPosition = (newX, newY);
+            } else {
+                Console.WriteLine("Error: Cannot move left");
+            }
+        }
+
+        public void MoveRight() {
+            int newX = currentPosition.Item1;
+            int newY = currentPosition.Item2 + 1;
+            if (IsValidMove(newX, newY, 1)) {
+                currentPosition = (newX, newY);
+            } else {
+                Console.WriteLine("Error: Cannot move right");
+            }
+        }
+
+        public void MoveUp() {
+            int newX = currentPosition.Item1 - 1;
+            int newY = currentPosition.Item2;
+            if (IsValidMove(newX, newY, 2)) {
+                currentPosition = (newX, newY);
+            } else {
+                Console.WriteLine("Error: Cannot move up");
+            }
+        }
+
+        public void MoveDown() {
+            int newX = currentPosition.Item1 + 1;
+            int newY = currentPosition.Item2;
+            if (IsValidMove(newX, newY, 3)) {
+                currentPosition = (newX, newY);
+            } else {
+                Console.WriteLine("Error: Cannot move down");
+            }
+        }
+
+        private bool IsValidMove(int x, int y, int directionIndex) {
+            // Check if new position is within the maze boundaries
+            if (!map.ContainsKey((x, y)))
+                return false;
+            
+            // Check if the movement is allowed
+            return map[(x, y)][directionIndex];
+        }
     }
 
     /// <summary>

@@ -38,7 +38,7 @@
         priorityQueue.Enqueue("ItemX", 3);
         priorityQueue.Enqueue("ItemY", 3);
         priorityQueue.Enqueue("ItemZ", 3);
-        Console.WriteLine($"Dequeuing: {priorityQueue.Dequeue()}");
+        Console.WriteLine($"Dequeuing: {priorityQueue.Dequeue()}");  
         Console.WriteLine(priorityQueue);
 
         // Defect(s) Found: None
