@@ -17,6 +17,9 @@ public class BinarySearchTree : IEnumerable<int> {
             _root.Insert(value);
     }
 
+    
+    
+
     /// <summary>
     /// Check to see if the tree contains a certain value
     /// </summary>
@@ -65,7 +68,11 @@ public class BinarySearchTree : IEnumerable<int> {
     }
 
     private void TraverseBackward(Node? node, List<int> values) {
-        // TODO Problem 3
+        if (node != null) {
+            TraverseBackward(node.Right, values);
+            values.Add(node.Data);
+            TraverseBackward(node.Left, values);
+        }
     }
 
     /// <summary>
